@@ -15,7 +15,7 @@
 String city = "Kanata";
 String countryCode = "CA";
 
-#define buttonPin 0
+#define buttonPin 0  // long press to reset device
 
 char IO_USERNAME[64] = "";
 char IO_KEY[64] = "";
@@ -293,12 +293,15 @@ void sendMessage(String m, int tlen)
 }
 void showTime()
 {
-
+  
   if (timeinfo.tm_hour > 12)
     sprintf(buf, "%s %02d  %2d:%02d PM", monthNames[timeinfo.tm_mon], timeinfo.tm_mday, timeinfo.tm_hour - 12, timeinfo.tm_min);
-  else
+  else if (timeinfo.tm_hour > 0)
     sprintf(buf, "%s %02d  %2d:%02d AM", monthNames[timeinfo.tm_mon], timeinfo.tm_mday, timeinfo.tm_hour, timeinfo.tm_min);
-
+  else
+  sprintf(buf, "%s %02d  %2d:%02d AM", monthNames[timeinfo.tm_mon], timeinfo.tm_mday, 12, timeinfo.tm_min);
+ 
+   
   Serial.println(buf);
   line2();
   red();
@@ -628,7 +631,7 @@ void loop()
       clear();
       line1();
       red();
-      sendMessage("Resetting...");
+      sendMessage("Reseting...");
       resetAll();
       delay(20);
     }
