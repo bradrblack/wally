@@ -29,7 +29,6 @@ AdafruitIO_WiFi *io; // a pointer to the object, once it's constructed
 
 const char *ntpServer = "pool.ntp.org";
 struct tm timeinfo;
-int clock_hour = 0;
 
 char buf[25];
 static const char *monthNames[] = {"Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"};
@@ -115,7 +114,7 @@ void showWeather()
     if (wmain == "\"Thunderstorm\"")
       wmain = String("\"T-Storm\"");
 
-    Serial.printf("Weather: %s  Temp: %0.1f\n", wmain.substring(1, wmain.length() - 1), wtemp.toFloat());
+    //Serial.printf("Weather: %s  Temp: %0.1f\n", wmain.substring(1, wmain.length() - 1), wtemp.toFloat());
 
     line1();
     green();
@@ -297,6 +296,7 @@ void sendMessage(char *m)
     Serial.print(m[i]);
     delay(3);
   }
+  Serial.printf("\n");
 }
 void sendMessage(String m, int tlen)
 {
@@ -313,6 +313,7 @@ void sendMessage(String m, int tlen)
     Serial1.print(" ");
     delay(3);
   }
+  Serial.printf("\n");
 }
 void showTime()
 {
@@ -324,7 +325,7 @@ void showTime()
   else
     sprintf(buf, "%s %02d  %2d:%02d AM", monthNames[timeinfo.tm_mon], timeinfo.tm_mday, 12, timeinfo.tm_min);
 
-  Serial.println(buf);
+  //Serial.println(buf);
   line2();
   red();
   sendMessage(buf);
@@ -620,12 +621,7 @@ void setup()
 
       Serial.printf("Time: %i : %i : %i\n", timeinfo.tm_hour, timeinfo.tm_min, timeinfo.tm_sec);
     }
-    if (timeinfo.tm_hour == 0)
-    {
-      clock_hour = 12;
-    }
-    else
-      clock_hour = timeinfo.tm_hour < 13 ? timeinfo.tm_hour : timeinfo.tm_hour - 12;
+   
   }
   delay(10000);
   showTime();
@@ -665,17 +661,16 @@ void loop()
   }
   EVERY_N_MINUTES(10)
   {
-    myGetLocalTime(&timeinfo);
+    showWeather();
+  }
+
+  EVERY_N_SECONDS(1)
+  {
+
+      myGetLocalTime(&timeinfo);
     if (timeinfo.tm_sec == 0)
     {
-      if (timeinfo.tm_hour == 0)
-      {
-        clock_hour = 12;
-      }
-      else
-      {
-        clock_hour = timeinfo.tm_hour < 13 ? timeinfo.tm_hour : timeinfo.tm_hour - 12;
-      }
+   
       showTime();
     }
   }
