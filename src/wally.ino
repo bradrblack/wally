@@ -90,43 +90,53 @@ void showWeather()
     String serverPath = "http://api.openweathermap.org/data/2.5/weather?q=" + city + "," + countryCode + "&APPID=" + openWeatherMapApiKey + "&units=metric";
 
     String w = httpGETRequest(serverPath.c_str());
-    DynamicJsonDocument jsonBuffer(1024);
 
-    DeserializationError error = deserializeJson(jsonBuffer, w);
-    if (error)
+    if (w == "{}")
     {
-
-      Serial.println("de-serialization error");
-
+      Serial.println("Weather API Request NOT SUCESSFUL");
       return;
     }
 
-    String wmain;
-    String wtemp;
-    char ws[24];
-    char wt[6];
+    else
+    {
+      DynamicJsonDocument jsonBuffer(1024);
 
-    serializeJson(jsonBuffer["weather"][0]["main"], wmain);
-    serializeJson(jsonBuffer["main"]["temp"], wtemp);
+      DeserializationError error = deserializeJson(jsonBuffer, w);
+      if (error)
+      {
 
-    sprintf(wt, "%0.1f~C", wtemp.toFloat());
+        Serial.println("de-serialization error");
 
-    if (wmain == "\"Thunderstorm\"")
-      wmain = String("\"T-Storm\"");
+        return;
+      }
 
-    //Serial.printf("Weather: %s  Temp: %0.1f\n", wmain.substring(1, wmain.length() - 1), wtemp.toFloat());
+      String wmain;
+      String wtemp;
+      char ws[24];
+      char wt[6];
 
-    line1();
-    green();
-    sendMessage(wmain.substring(1, wmain.length() - 1), strlen(wt) - 2);
+      serializeJson(jsonBuffer["weather"][0]["main"], wmain);
+      serializeJson(jsonBuffer["main"]["temp"], wtemp);
 
-    orange();
+      sprintf(wt, "%0.1f~C", wtemp.toFloat());
 
-    sendMessage(wt);
-  }
-  else
-  {
-    Serial.println("WiFi Disconnected");
+      if (wmain == "\"Thunderstorm\"")
+        wmain = String("\"T-Storm\"");
+
+      // Serial.printf("Weather: %s  Temp: %0.1f\n", wmain.substring(1, wmain.length() - 1), wtemp.toFloat());
+
+      line1();
+      green();
+      sendMessage(wmain.substring(1, wmain.length() - 1), strlen(wt) - 2);
+
+      orange();
+
+      sendMessage(wt);
+    }
+    else
+    {
+      Serial.println("WiFi Disconnected");
+    }
   }
 }
 
