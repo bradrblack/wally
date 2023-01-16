@@ -133,11 +133,12 @@ void showWeather()
 
       sendMessage(wt);
     }
+  }
     else
     {
       Serial.println("WiFi Disconnected");
     }
-  }
+  
 }
 
 bool myGetLocalTime(struct tm *info)
@@ -330,10 +331,13 @@ void showTime()
 
   if (timeinfo.tm_hour > 12)
     sprintf(buf, "%s %02d  %2d:%02d PM", monthNames[timeinfo.tm_mon], timeinfo.tm_mday, timeinfo.tm_hour - 12, timeinfo.tm_min);
+ 
+  else if (timeinfo.tm_hour == 0)
+    sprintf(buf, "%s %02d  %2d:%02d AM", monthNames[timeinfo.tm_mon], timeinfo.tm_mday, 12, timeinfo.tm_min);
+  else if (timeinfo.tm_hour == 12)
+     sprintf(buf, "%s %02d  %2d:%02d PM", monthNames[timeinfo.tm_mon], timeinfo.tm_mday, 12, timeinfo.tm_min);
   else if (timeinfo.tm_hour > 0)
     sprintf(buf, "%s %02d  %2d:%02d AM", monthNames[timeinfo.tm_mon], timeinfo.tm_mday, timeinfo.tm_hour, timeinfo.tm_min);
-  else
-    sprintf(buf, "%s %02d  %2d:%02d AM", monthNames[timeinfo.tm_mon], timeinfo.tm_mday, 12, timeinfo.tm_min);
 
   //Serial.println(buf);
   line2();
@@ -646,6 +650,7 @@ void loop()
 
   if (digitalRead(buttonPin) == LOW)
   {
+    Serial.println("Button Down");
     delay(3000);
     if (digitalRead(buttonPin) == LOW)
     {
